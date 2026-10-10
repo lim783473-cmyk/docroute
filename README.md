@@ -78,6 +78,25 @@ Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin cover
 >
 > **A:** menu → `deployment` (0.78), `logging` (0.62) … then `get_doc` fetches the full deployment page.
 
+## Troubleshooting
+
+| Symptom | Cause & fix |
+|---|---|
+| **HTTP 403 from your own scripts** | Cloudflare bot protection blocks raw scripts that use the default `python-requests` / `urllib` user-agent. Use a real MCP client (ZCode / Cursor / Claude Desktop via `mcp-remote`) — they work out of the box. For quick manual probes, use `curl` (see below). |
+| **Old guide + `Authorization` header** | The open test needs **no auth**. If you copied an early config with a `Bearer` token, you can remove that header (it's harmless but unnecessary). |
+| **Timeout** | Large stacks judge their whole corpus per query (1–5 min). Set client timeout ≥ 300s and retry once before giving up. |
+| **`judge_error` in results** | Upstream judge hiccup — wait a minute and retry. |
+| **`no_evidence` / empty results** | That stack genuinely lacks this content (or coverage is thin). Rephrase with technical keywords, or switch stacks. |
+
+Manual probe with curl:
+
+```bash
+curl -s -X POST https://docroute.songm.dpdns.org/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"test","version":"0"}},"id":1}'
+```
+
 ## Status & notes
 
 - 🧪 **Open test**: free, no auth. Rate limits apply per client IP (search 60/h, get_doc 600/h, list 120/h). Be kind.
@@ -137,6 +156,16 @@ Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin cover
 - 语料与路由引擎**不在本仓库**——本仓库只是接入说明书，服务本身才是产品
 - 大栈全库判定需 1~5 分钟，客户端超时建议 ≥300 秒
 - 域名为 Cloudflare 命名隧道永久域名，测试期可用性尽力保障
+
+### 连不上？（排查表）
+
+| 现象 | 原因与处理 |
+|---|---|
+| **自己写的脚本报 HTTP 403** | Cloudflare 的 bot 防护会拦默认 `python-requests` / `urllib` 指纹的裸脚本。**换正规 MCP 客户端**（ZCode / Cursor / Claude Desktop + mcp-remote）即可直连；要手工探活请用 `curl`（命令见上方英文区）。 |
+| 配置里带了 `Authorization` 头 | 开放测试**不需要鉴权**。早期指南里的 Bearer token 可以删掉（留着也无害）。 |
+| 超时 | 大栈全库判定要 1~5 分钟，客户端超时设 ≥300 秒，失败先重试一次。 |
+| 结果里 `judge_error` | 判定服务临时故障，等一分钟重试。 |
+| `no_evidence` / 空结果 | 该栈确实没有这类内容（或覆盖薄），换技术关键词重问或换栈。 |
 
 ## License
 
