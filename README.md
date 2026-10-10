@@ -64,7 +64,7 @@ Use **Streamable HTTP** transport with endpoint `https://docroute.songm.dpdns.or
 | `search_docs` | `stack`, `query` | A ranked menu of matching docs with score + one-line gist. Cheap on tokens — read the top 1–2, fetch more only if needed |
 | `get_doc` | `stack`, `path` | The **complete original text** of one doc, with drift detection |
 
-Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin coverage, try rephrasing; `judge_error` = matching service hiccup upstream, retry.
+Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin coverage, try rephrasing; `match_error` = matching service hiccup upstream, retry.
 
 ## How to ask (works much better)
 
@@ -85,7 +85,7 @@ Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin cover
 | **HTTP 403 from your own scripts** | Cloudflare bot protection blocks raw scripts that use the default `python-requests` / `urllib` user-agent. Use a real MCP client (ZCode / Cursor / Claude Desktop via `mcp-remote`) — they work out of the box. For quick manual probes, use `curl` (see below). |
 | **Old guide + `Authorization` header** | The open test needs **no auth**. If you copied an early config with a `Bearer` token, you can remove that header (it's harmless but unnecessary). |
 | **Timeout** | Large stacks judge their whole corpus per query (1–5 min). Set client timeout ≥ 300s and retry once before giving up. |
-| **`judge_error` in results** | Upstream judge hiccup — wait a minute and retry. |
+| **`match_error` in results** | Upstream matching hiccup — wait a minute and retry. |
 | **`no_evidence` / empty results** | That stack genuinely lacks this content (or coverage is thin). Rephrase with technical keywords, or switch stacks. |
 
 Manual probe with curl:
@@ -164,7 +164,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 | **自己写的脚本报 HTTP 403** | Cloudflare 的 bot 防护会拦默认 `python-requests` / `urllib` 指纹的裸脚本。**换正规 MCP 客户端**（ZCode / Cursor / Claude Desktop + mcp-remote）即可直连；要手工探活请用 `curl`（命令见上方英文区）。 |
 | 配置里带了 `Authorization` 头 | 开放测试**不需要鉴权**。早期指南里的 Bearer token 可以删掉（留着也无害）。 |
 | 超时 | 大栈全库匹配要 1~5 分钟，客户端超时设 ≥300 秒，失败先重试一次。 |
-| 结果里 `judge_error` | 匹配服务临时故障，等一分钟重试。 |
+| 结果里 `match_error` | 匹配服务临时故障，等一分钟重试。 |
 | `no_evidence` / 空结果 | 该栈确实没有这类内容（或覆盖薄），换技术关键词重问或换栈。 |
 
 ## License
