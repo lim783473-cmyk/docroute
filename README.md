@@ -8,7 +8,7 @@ Give your AI a documentation librarian: it asks DocRoute what the official docs 
 
 - **88 tech stacks**: React, Vue, Next.js, FastAPI, Django, Fastify, K8s, Docker, Terraform, Redis, PostgreSQL-ecosystem ORM, Stripe, OpenAI / Anthropic / Gemini APIs, LangChain, Playwright… grouped into 9 categories.
 - **Remote MCP — zero install**: point your MCP client at one URL. Works with ZCode, Claude Desktop (via `mcp-remote`), Cursor, Cherry Studio, and any MCP-compatible agent.
-- **Judge-based matching**: instead of keyword/embedding search, DocRoute broadcasts your question to a judgment model that reads each doc unit's profile and scores actual relevance — so "how do I deploy Fastify to production" returns the deployment guide, not the plugins page.
+- **Precision matching**: instead of plain keyword/embedding search, DocRoute deep-scores each doc unit for actual relevance to your question — so "how do I deploy Fastify to production" returns the deployment guide, not the plugins page.
 - **Full-text delivery**: `get_doc` returns the *entire* page (with sha256 fingerprint to catch drift), ready for the model to read.
 
 ## Quick start
@@ -64,7 +64,7 @@ Use **Streamable HTTP** transport with endpoint `https://docroute.songm.dpdns.or
 | `search_docs` | `stack`, `query` | A ranked menu of matching docs with score + one-line gist. Cheap on tokens — read the top 1–2, fetch more only if needed |
 | `get_doc` | `stack`, `path` | The **complete original text** of one doc, with drift detection |
 
-Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin coverage, try rephrasing; `judge_error` = upstream judge hiccup, retry.
+Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin coverage, try rephrasing; `judge_error` = matching service hiccup upstream, retry.
 
 ## How to ask (works much better)
 
@@ -112,7 +112,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 
 - **88 个技术栈**：前端 / 后端 / 运维 / 数据 / AI / 工具 / 测试 / 语言 / 支付 九大类。
 - **远程 MCP，零安装**：MCP 客户端里填一个 URL 即可（ZCode / Claude Desktop / Cursor / Cherry Studio 均可）。
-- **判定式匹配**：不是关键词也不是向量检索——把你的问题广播给判定模型逐单元打分，命中真正的相关文档。
+- **精准匹配**：不是关键词也不是向量检索——对每份文档与你问题的相关性做深度评估，命中真正相关的那篇，而不是一堆似是而非的结果。
 - **交付完整原文**：`get_doc` 直接返回整页文档（带 sha256 指纹防过期）。
 
 ### 接入（三选一）
@@ -164,7 +164,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 | **自己写的脚本报 HTTP 403** | Cloudflare 的 bot 防护会拦默认 `python-requests` / `urllib` 指纹的裸脚本。**换正规 MCP 客户端**（ZCode / Cursor / Claude Desktop + mcp-remote）即可直连；要手工探活请用 `curl`（命令见上方英文区）。 |
 | 配置里带了 `Authorization` 头 | 开放测试**不需要鉴权**。早期指南里的 Bearer token 可以删掉（留着也无害）。 |
 | 超时 | 大栈全库判定要 1~5 分钟，客户端超时设 ≥300 秒，失败先重试一次。 |
-| 结果里 `judge_error` | 判定服务临时故障，等一分钟重试。 |
+| 结果里 `judge_error` | 匹配服务临时故障，等一分钟重试。 |
 | `no_evidence` / 空结果 | 该栈确实没有这类内容（或覆盖薄），换技术关键词重问或换栈。 |
 
 ## License
