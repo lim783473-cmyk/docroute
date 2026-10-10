@@ -54,7 +54,7 @@ Requires Node.js. Add to `claude_desktop_config.json`:
 
 ### Any other MCP client
 
-Use **Streamable HTTP** transport with endpoint `https://docroute.songm.dpdns.org/mcp`, no auth required during the open test. Set timeouts ≥ 300s (large stacks judge their whole corpus per query, which takes 1–5 min).
+Use **Streamable HTTP** transport with endpoint `https://docroute.songm.dpdns.org/mcp`, no auth required during the open test. Set timeouts ≥ 300s (large stacks score their whole corpus per query, which takes 1–5 min).
 
 ## Tools
 
@@ -84,7 +84,7 @@ Result quality signal: `hit` = direct match; `weak` / `no_evidence` = thin cover
 |---|---|
 | **HTTP 403 from your own scripts** | Cloudflare bot protection blocks raw scripts that use the default `python-requests` / `urllib` user-agent. Use a real MCP client (ZCode / Cursor / Claude Desktop via `mcp-remote`) — they work out of the box. For quick manual probes, use `curl` (see below). |
 | **Old guide + `Authorization` header** | The open test needs **no auth**. If you copied an early config with a `Bearer` token, you can remove that header (it's harmless but unnecessary). |
-| **Timeout** | Large stacks judge their whole corpus per query (1–5 min). Set client timeout ≥ 300s and retry once before giving up. |
+| **Timeout** | Large stacks score their whole corpus per query (1–5 min). Set client timeout ≥ 300s and retry once before giving up. |
 | **`match_error` in results** | Upstream matching hiccup — wait a minute and retry. |
 | **`no_evidence` / empty results** | That stack genuinely lacks this content (or coverage is thin). Rephrase with technical keywords, or switch stacks. |
 
