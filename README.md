@@ -140,7 +140,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 | 工具 | 作用 |
 |---|---|
 | `list_stacks` | 列出全部 88 个技术栈（按类分组） |
-| `search_docs` | 提问 → 判定 → 返回相关文档菜单（带匹配分和一句话简介） |
+| `search_docs` | 提问 → 匹配 → 返回相关文档菜单（带匹配分和一句话简介） |
 | `get_doc` | 取某份文档的完整原文（带指纹校验） |
 
 ### 用法规矩（照做效果最好）
@@ -154,7 +154,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 
 - 免费开放，无需鉴权；按 IP 限速（search 60 次/时、get_doc 600 次/时、list 120 次/时），请勿滥用
 - 语料与路由引擎**不在本仓库**——本仓库只是接入说明书，服务本身才是产品
-- 大栈全库判定需 1~5 分钟，客户端超时建议 ≥300 秒
+- 大栈全库匹配需 1~5 分钟，客户端超时建议 ≥300 秒
 - 域名为 Cloudflare 命名隧道永久域名，测试期可用性尽力保障
 
 ### 连不上？（排查表）
@@ -163,7 +163,7 @@ curl -s -X POST https://docroute.songm.dpdns.org/mcp \
 |---|---|
 | **自己写的脚本报 HTTP 403** | Cloudflare 的 bot 防护会拦默认 `python-requests` / `urllib` 指纹的裸脚本。**换正规 MCP 客户端**（ZCode / Cursor / Claude Desktop + mcp-remote）即可直连；要手工探活请用 `curl`（命令见上方英文区）。 |
 | 配置里带了 `Authorization` 头 | 开放测试**不需要鉴权**。早期指南里的 Bearer token 可以删掉（留着也无害）。 |
-| 超时 | 大栈全库判定要 1~5 分钟，客户端超时设 ≥300 秒，失败先重试一次。 |
+| 超时 | 大栈全库匹配要 1~5 分钟，客户端超时设 ≥300 秒，失败先重试一次。 |
 | 结果里 `judge_error` | 匹配服务临时故障，等一分钟重试。 |
 | `no_evidence` / 空结果 | 该栈确实没有这类内容（或覆盖薄），换技术关键词重问或换栈。 |
 
